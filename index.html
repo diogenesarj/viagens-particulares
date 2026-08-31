@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D.A Viagens Particulares - Pré-Orçamento</title>
+    <style>
+        :root {
+            --primary-gold: #d4af37;
+            --dark-bg: #121212;
+            --card-bg: #1e1e1e;
+            --text-light: #ffffff;
+            --text-gray: #b0b0b0;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            width: 100%;
+            max-width: 480px;
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+            border: 1px solid var(--primary-gold);
+        }
+        h2 {
+            text-align: center;
+            color: var(--primary-gold);
+            margin-bottom: 5px;
+            font-size: 22px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .subtitle {
+            text-align: center;
+            color: var(--text-gray);
+            font-size: 13px;
+            margin-bottom: 25px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--primary-gold);
+            font-weight: 600;
+            font-size: 14px;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            background: #2a2a2a;
+            border: 1px solid #444;
+            color: #fff;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        input:focus, select:focus {
+            border-color: var(--primary-gold);
+            outline: none;
+        }
+        .map-helper {
+            background: #262626;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            color: var(--text-gray);
+            margin-bottom: 15px;
+            border: 1px dashed #444;
+            text-align: center;
+        }
+        .map-helper a {
+            color: var(--primary-gold);
+            font-weight: bold;
+            text-decoration: underline;
+        }
+        .aviso-carencia {
+            font-size: 11px;
+            color: #d4af37;
+            margin-top: 5px;
+            font-style: italic;
+            display: none;
+        }
+        button {
+            width: 100%;
+            background: linear-gradient(135deg, #d4af37 0%, #aa8c2c 100%);
+            color: #121212;
+            padding: 14px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: opacity 0.2s;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        #resultado {
+            margin-top: 20px;
+            padding: 15px;
+            background: #262626;
+            border-left: 4px solid var(--primary-gold);
+            border-radius: 4px;
+            display: none;
+        }
+        #resultado h3 {
+            margin: 0 0 10px 0;
+            color: var(--primary-gold);
+            font-size: 16px;
+        }
+        .valor-destaque {
+            font-size: 22px;
+            color: #4cd137;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .aviso-pedagio {
+            font-size: 12px;
+            color: var(--text-gray);
+            font-style: italic;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>D.A Viagens Particulares</h2>
+    <div class="subtitle">Conforto, segurança e pontualidade</div>
+
+    <div class="form-group">
+        <label>Seu Nome:</label>
+        <input type="text" id="nome" placeholder="Digite seu nome completo">
+    </div>
+
+    <div class="form-group">
+        <label>Origem (Endereço/Cidade de saída):</label>
+        <input type="text" id="origem" placeholder="Ex: Limeira, SP">
+    </div>
+
+    <div class="form-group">
+        <label>Destino (Endereço/Cidade de chegada):</label>
+        <input type="text" id="destino" placeholder="Ex: Aeroporto de Guarulhos, SP">
+    </div>
+
+    <div class="map-helper">
+        📍 <strong>Dica:</strong> Não sabe a distância exata? 
+        <a href="https://maps.google.com" target="_blank">Clique aqui para olhar no Google Maps</a>, veja os quilômetros e informe abaixo.
+    </div>
+
+    <div class="form-group">
+        <label>Distância em Quilômetros (Km):</label>
+        <input type="number" id="distanciaKm" placeholder="Ex: 180">
+    </div>
+
+    <div class="form-group">
+        <label>Tipo de Viagem:</label>
+        <select id="tipoViagem" onchange="verificarCarencia()">
+            <option value="ida">Somente Ida</option>
+            <option value="idaVolta">Ida e Volta</option>
+        </select>
+        <div id="textoCarencia" class="aviso-carencia">⚠️ *Ida e Volta: Inclui até 1 hora de carência/espera no destino. Acima disso há reajuste.*</div>
+    </div>
+
+    <div class="form-group">
+        <label>Data Desejada:</label>
+        <input type="date" id="dataViagem">
+    </div>
+
+    <div class="form-group">
+        <label>Horário Desejado:</label>
+        <input type="time" id="horarioViagem">
+    </div>
+
+    <button onclick="calcularOrcamento()">Calcular Orçamento</button>
+
+    <div id="resultado">
+        <h3>Resumo do Pré-Orçamento</h3>
+        <p id="detalhesRota"></p>
+        <div class="valor-destaque" id="valorFinal"></div>
+        <div class="aviso-pedagio" id="textoAvisoFinal">* Valor estimado. Pedágios serão somados no fechamento final.</div>
+        <button onclick="enviarWhatsApp()" style="background: #25d366; color: #fff; margin-top: 15px;">Falar no WhatsApp e Agendar</button>
+    </div>
+</div>
+
+<script>
+    let dadosOrcamento = {};
+
+    function verificarCarencia() {
+        const tipo = document.getElementById('tipoViagem').value;
+        const aviso = document.getElementById('textoCarencia');
+        if (tipo === 'idaVolta') {
+            aviso.style.display = 'block';
+        } else {
+            aviso.style.display = 'none';
+        }
+    }
+
+    function calcularOrcamento() {
+        const nome = document.getElementById('nome').value;
+        const origem = document.getElementById('origem').value;
+        const destino = document.getElementById('destino').value;
+        const distanciaInput = parseFloat(document.getElementById('distanciaKm').value);
+        const tipoViagemSelect = document.getElementById('tipoViagem').value;
+        const data = document.getElementById('dataViagem').value;
+        const horario = document.getElementById('horarioViagem').value;
+
+        if (!nome || !origem || !destino || isNaN(distanciaInput) || !data || !horario) {
+            alert('Por favor, preencha todos os campos corretamente!');
+            return;
+        }
+
+        const distanciaKmOriginal = distanciaInput;
+
+        // Dobra o km nos bastidores para ambas as modalidades
+        let kmCalculo = distanciaKmOriginal * 2;
+
+        // Preços diferenciados: R$ 1,20 para somente ida / R$ 1,30 para ida e volta
+        let precoKm = (tipoViagemSelect === 'ida') ? 1.20 : 1.30;
+        let valorTotal = kmCalculo * precoKm;
+
+        const tipoTexto = (tipoViagemSelect === 'ida') ? 'Somente Ida' : 'Ida e Volta (Com até 1h de carência)';
+
+        dadosOrcamento = {
+            nome, origem, destino, tipoViagem: tipoTexto,
+            tipoSimples: tipoViagemSelect,
+            data, horario, distanciaOriginal: distanciaKmOriginal,
+            valorTotal: valorTotal.toFixed(2)
+        };
+
+        let htmlDetalhes = `
+            <strong>De:</strong> ${origem}<br>
+            <strong>Para:</strong> ${destino}<br>
+            <strong>Data/Hora:</strong> ${data.split('-').reverse().join('/')} às ${horario}<br>
+            <strong>Modalidade:</strong> ${tipoViagemSelect === 'ida' ? 'Somente Ida' : 'Ida e Volta'} (${distanciaKmOriginal} km informados)
+        `;
+
+        if (tipoViagemSelect === 'idaVolta') {
+            htmlDetalhes += `<br><span style="color: #d4af37; font-size: 12px;">🕒 Inclui até 1h de espera (sujeito a reajuste se passar).</span>`;
+        }
+
+        document.getElementById('detalhesRota').innerHTML = htmlDetalhes;
+        document.getElementById('valorFinal').innerHTML = `R$ ${valorTotal.toFixed(2)}`;
+        document.getElementById('resultado').style.display = 'block';
+    }
+
+    function enviarWhatsApp() {
+        const fone = "5519978033636";
+        let mensagemCarencia = "";
+        if (dadosOrcamento.tipoSimples === 'idaVolta') {
+            mensagemCarencia = "\n🕒 *Condição:* Ida e Volta (Até 1h de carência inclusa)";
+        }
+
+        const mensagem = `Olá! Meu nome é *${dadosOrcamento.nome}*.
+Gostaria de confirmar um agendamento de viagem:
+
+📍 *Origem:* ${dadosOrcamento.origem}
+🏁 *Destino:* ${dadosOrcamento.destino}
+🚗 *Tipo:* ${dadosOrcamento.tipoViagem}${mensagemCarencia}
+📅 *Data:* ${dadosOrcamento.data.split('-').reverse().join('/')} às ${dadosOrcamento.horario}
+💰 *Valor Estimado:* R$ ${dadosOrcamento.valorTotal} *(Sujeito a acréscimo de pedágios)*
+
+*(Info interna - Km base informado: ${dadosOrcamento.distanciaOriginal}km)*`;
+
+        const url = `https://api.whatsapp.com/send?phone=${fone}&text=${encodeURIComponent(mensagem)}`;
+        window.open(url, '_blank');
+    }
+</script>
+
+</body>
+</html>
