@@ -167,10 +167,20 @@
     </div>
 
     <div class="form-group">
+        <label>Quantidade de Passageiros:</label>
+        <select id="qtdPassageiros">
+            <option value="1">1 Passageiro</option>
+            <option value="2">2 Passageiros</option>
+            <option value="3">3 Passageiros</option>
+            <option value="4" selected>4 Passageiros (Máximo)</option>
+        </select>
+    </div>
+
+    <div class="form-group">
         <label>Tipo de Viagem:</label>
         <select id="tipoViagem" onchange="verificarCarencia()">
-            <option value="ida">Somente Ida</option>
-            <option value="idaVolta">Ida e Volta</option>
+            <option value="ida">Somente Ida (R$ 1,25 / km)</option>
+            <option value="idaVolta">Ida e Volta (R$ 1,35 / km)</option>
         </select>
         <div id="textoCarencia" class="aviso-carencia">⚠️ *Ida e Volta: Inclui até 1 hora de carência/espera no destino. Acima disso há reajuste.*</div>
     </div>
@@ -214,6 +224,7 @@
         const origem = document.getElementById('origem').value;
         const destino = document.getElementById('destino').value;
         const distanciaInput = parseFloat(document.getElementById('distanciaKm').value);
+        const qtdPassageiros = document.getElementById('qtdPassageiros').value;
         const tipoViagemSelect = document.getElementById('tipoViagem').value;
         const data = document.getElementById('dataViagem').value;
         const horario = document.getElementById('horarioViagem').value;
@@ -228,8 +239,8 @@
         // Dobra o km nos bastidores para ambas as modalidades
         let kmCalculo = distanciaKmOriginal * 2;
 
-        // Preços diferenciados: R$ 1,20 para somente ida / R$ 1,30 para ida e volta
-        let precoKm = (tipoViagemSelect === 'ida') ? 1.20 : 1.30;
+        // Novos preços atualizados: R$ 1,25 para somente ida / R$ 1,35 para ida e volta
+        let precoKm = (tipoViagemSelect === 'ida') ? 1.25 : 1.35;
         let valorTotal = kmCalculo * precoKm;
 
         const tipoTexto = (tipoViagemSelect === 'ida') ? 'Somente Ida' : 'Ida e Volta (Com até 1h de carência)';
@@ -237,6 +248,7 @@
         dadosOrcamento = {
             nome, origem, destino, tipoViagem: tipoTexto,
             tipoSimples: tipoViagemSelect,
+            qtdPassageiros,
             data, horario, distanciaOriginal: distanciaKmOriginal,
             valorTotal: valorTotal.toFixed(2)
         };
@@ -244,6 +256,7 @@
         let htmlDetalhes = `
             <strong>De:</strong> ${origem}<br>
             <strong>Para:</strong> ${destino}<br>
+            <strong>Passageiros:</strong> ${qtdPassageiros} pessoa(s)<br>
             <strong>Data/Hora:</strong> ${data.split('-').reverse().join('/')} às ${horario}<br>
             <strong>Modalidade:</strong> ${tipoViagemSelect === 'ida' ? 'Somente Ida' : 'Ida e Volta'} (${distanciaKmOriginal} km informados)
         `;
@@ -253,7 +266,7 @@
         }
 
         document.getElementById('detalhesRota').innerHTML = htmlDetalhes;
-        document.getElementById('valorFinal').innerHTML = `R$ ${valorTotal.toFixed(2)}`;
+        document.getElementById8 = document.getElementById('valorFinal').innerHTML = `R$ ${valorTotal.toFixed(2)}`;
         document.getElementById('resultado').style.display = 'block';
     }
 
@@ -269,6 +282,7 @@ Gostaria de confirmar um agendamento de viagem:
 
 📍 *Origem:* ${dadosOrcamento.origem}
 🏁 *Destino:* ${dadosOrcamento.destino}
+👥 *Passageiros:* ${dadosOrcamento.qtdPassageiros} pessoa(s)
 🚗 *Tipo:* ${dadosOrcamento.tipoViagem}${mensagemCarencia}
 📅 *Data:* ${dadosOrcamento.data.split('-').reverse().join('/')} às ${dadosOrcamento.horario}
 💰 *Valor Estimado:* R$ ${dadosOrcamento.valorTotal} *(Sujeito a acréscimo de pedágios)*
