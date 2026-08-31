@@ -179,8 +179,8 @@
     <div class="form-group">
         <label>Tipo de Viagem:</label>
         <select id="tipoViagem" onchange="verificarCarencia()">
-            <option value="ida">Somente Ida (R$ 1,25 / km)</option>
-            <option value="idaVolta">Ida e Volta (R$ 1,35 / km)</option>
+            <option value="ida">Somente Ida</option>
+            <option value="idaVolta">Ida e Volta</option>
         </select>
         <div id="textoCarencia" class="aviso-carencia">⚠️ *Ida e Volta: Inclui até 1 hora de carência/espera no destino. Acima disso há reajuste.*</div>
     </div>
@@ -195,7 +195,7 @@
         <input type="time" id="horarioViagem">
     </div>
 
-    <button onclick="calcularOrcamento()">Calcular Orçamento</button>
+    <button onclick="calcularOrcamento()">Calcalcular Orçamento</button>
 
     <div id="resultado">
         <h3>Resumo do Pré-Orçamento</h3>
@@ -236,10 +236,10 @@
 
         const distanciaKmOriginal = distanciaInput;
 
-        // Dobra o km nos bastidores para ambas as modalidades
+        // Dobra o km nos bastidores
         let kmCalculo = distanciaKmOriginal * 2;
 
-        // Novos preços atualizados: R$ 1,25 para somente ida / R$ 1,35 para ida e volta
+        // Valores aplicados internamente: R$ 1,25 (ida) / R$ 1,35 (ida e volta)
         let precoKm = (tipoViagemSelect === 'ida') ? 1.25 : 1.35;
         let valorTotal = kmCalculo * precoKm;
 
@@ -266,7 +266,7 @@
         }
 
         document.getElementById('detalhesRota').innerHTML = htmlDetalhes;
-        document.getElementById8 = document.getElementById('valorFinal').innerHTML = `R$ ${valorTotal.toFixed(2)}`;
+        document.getElementById('valorFinal').innerHTML = `R$ ${valorTotal.toFixed(2)}`;
         document.getElementById('resultado').style.display = 'block';
     }
 
