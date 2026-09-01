@@ -200,7 +200,7 @@
         <div class="form-group">
             <label>Parada Extra no Caminho (Opcional):</label>
             <input type="text" id="paradaExtra" placeholder="Ex: Passar em Jundiaí por 10 min">
-            <div class="aviso-parada">💡 Se a parada for fora da rota ou entrar em outra cidade, some esse desvio nos quilômetros abaixo.</div>
+            <div class="aviso-parada">💡 Se a parada for fora da rota ou entrar em outra cidade, informe os km totais considerando esse desvio.</div>
         </div>
 
         <div class="map-helper">
@@ -355,7 +355,7 @@
         document.getElementById('valorFinal').innerHTML = `R$ ${valorTotal.toFixed(2)}`;
         document.getElementById('resultado').style.display = 'block';
         
-        // Rrola suavemente até o resultado
+        // Rola suavemente até o resultado
         document.getElementById('resultado').scrollIntoView({ behavior: 'smooth' });
     }
 
