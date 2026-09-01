@@ -7,14 +7,16 @@
     <style>
         :root {
             --primary-gold: #d4af37;
+            --gold-light: #f3e5ab;
             --dark-bg: #121212;
             --card-bg: #1e1e1e;
+            --section-bg: #262626;
             --text-light: #ffffff;
             --text-gray: #b0b0b0;
         }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--dark-bg);
+            background: radial-gradient(circle at center, #1e1e1e 0%, #121212 100%);
             color: var(--text-light);
             margin: 0;
             padding: 20px;
@@ -25,36 +27,78 @@
         }
         .container {
             width: 100%;
-            max-width: 480px;
+            max-width: 520px;
             background: var(--card-bg);
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 12px 36px rgba(0,0,0,0.7), 0 0 20px rgba(212, 175, 55, 0.15);
             border: 1px solid var(--primary-gold);
+        }
+        .logo-container {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .logo-img {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            border: 2px solid var(--primary-gold);
+            box-shadow: 0 0 12px rgba(212, 175, 55, 0.4);
+            object-fit: cover;
         }
         h2 {
             text-align: center;
-            color: var(--primary-gold);
+            background: linear-gradient(135deg, #fff 0%, var(--primary-gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             margin-bottom: 5px;
-            font-size: 22px;
+            font-size: 24px;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
         }
         .subtitle {
             text-align: center;
             color: var(--text-gray);
             font-size: 13px;
             margin-bottom: 25px;
+            letter-spacing: 0.5px;
         }
-        .form-group {
+        
+        /* Blocos de Etapas */
+        .form-section-block {
+            background: var(--section-bg);
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 18px;
+            margin-bottom: 20px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+        }
+        .section-title {
+            color: var(--primary-gold);
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
             margin-bottom: 15px;
+            border-bottom: 1px dashed #444;
+            padding-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+        .form-group:last-child {
+            margin-bottom: 0;
         }
         label {
             display: block;
             margin-bottom: 5px;
-            color: var(--primary-gold);
-            font-weight: 600;
-            font-size: 14px;
+            color: var(--text-light);
+            font-weight: 500;
+            font-size: 13px;
         }
         input, select, textarea {
             width: 100%;
@@ -66,14 +110,16 @@
             box-sizing: border-box;
             font-size: 14px;
             font-family: inherit;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
         input:focus, select:focus, textarea:focus {
             border-color: var(--primary-gold);
+            box-shadow: 0 0 8px rgba(212, 175, 55, 0.3);
             outline: none;
         }
         textarea {
             resize: vertical;
-            height: 80px;
+            height: 75px;
         }
         .aviso-parada {
             font-size: 11px;
@@ -82,12 +128,12 @@
             font-style: italic;
         }
         .map-helper {
-            background: #262626;
-            padding: 12px;
+            background: #1f1f1f;
+            padding: 10px 12px;
             border-radius: 6px;
             font-size: 12px;
             color: var(--text-gray);
-            margin-bottom: 15px;
+            margin-bottom: 14px;
             border: 1px dashed var(--primary-gold);
             text-align: center;
         }
@@ -103,46 +149,84 @@
             font-style: italic;
             display: none;
         }
-        button {
+        button.btn-calcular {
             width: 100%;
             background: linear-gradient(135deg, #d4af37 0%, #aa8c2c 100%);
             color: #121212;
-            padding: 14px;
+            padding: 15px;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
+            margin-top: 5px;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+            transition: transform 0.1s, opacity 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        button.btn-calcular:hover {
+            opacity: 0.95;
+            transform: translateY(-1px);
+        }
+        .btn-limpar {
+            width: 100%;
+            background: #333;
+            color: #aaa;
+            border: 1px solid #555;
             margin-top: 10px;
-            transition: opacity 0.2s;
+            font-size: 13px;
+            padding: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
         }
-        button:hover {
-            opacity: 0.9;
+        .btn-limpar:hover {
+            background: #444;
+            color: #fff;
         }
+        
+        /* Animação Suave Fade-In e Efeito Luxo para o Resultado */
         #resultado {
-            margin-top: 20px;
-            padding: 15px;
-            background: #262626;
-            border-left: 4px solid var(--primary-gold);
-            border-radius: 4px;
+            margin-top: 25px;
+            padding: 20px;
+            background: linear-gradient(145deg, #262626 0%, #1a1a1a 100%);
+            border: 1px solid var(--primary-gold);
+            border-left: 5px solid var(--primary-gold);
+            border-radius: 8px;
             display: none;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+            animation: fadeInLux 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes fadeInLux {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         #resultado h3 {
-            margin: 0 0 10px 0;
+            margin: 0 0 12px 0;
             color: var(--primary-gold);
-            font-size: 16px;
+            font-size: 17px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         .valor-destaque {
-            font-size: 22px;
+            font-size: 26px;
             color: #4cd137;
             font-weight: bold;
-            margin: 10px 0;
+            margin: 12px 0 5px 0;
+            text-shadow: 0 0 10px rgba(76, 209, 55, 0.2);
         }
         .aviso-pedagio {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-gray);
             font-style: italic;
-            margin-top: 5px;
+            margin-bottom: 15px;
         }
         .termos-footer {
             margin-top: 25px;
@@ -161,82 +245,107 @@
 <body>
 
 <div class="container">
+    <!-- Logotipo Dedicado -->
+    <div class="logo-container">
+        <img src="data:image/png;base64,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6SotLdWECRM0Z84cPfbYY6qurja13WR/z8iRI3X11Vdr165dys3N1ZIlS1RUVNTl8WaOe6rXGT58uGbOnKlNmzZJkm6//XaNHj1atbW1SY/pzTffLEnasWNH0t8vWLCgx9fv37+/Vq9erUmTJqmhoUE///nPNX36dI0YMaLjWM6bN0+7du3S/Pnzdfrppxs+hm5z85gbfX5P57rb56lZQRg8T/B1gGSybIvH43ryySclSd/4xjfSPnbu3LmSpKeeekptbW2mXqdfv34qKytTfX29brrpJtXW1mr69OkaPHhw0scvXLhQp5xyig4dOqQZM2bo7rvv1tatW1VbW6uWlhYdOHBAL730km655RZNnjxZf/vb30ztjxEPP/ywJGn+/PnKz883/LxLL71U+fn5qqys1JVXXqn169fr0KFDisVi2r17t/785z/rjjvu0De/+U3b+1hbW6uXX35Zc+fOVVtbm/r27atLLrmk4/dmj3sqdXV1eu2113TNNdeorq5O2dnZ+uIXv2h7/9PpfA586Utf0r333qu33npLx44d6ziWy5cv19SpU/Uf//Efps9JtwTlmGfyPLXCr91Xkk8CxEwZ5mYVsnLlSrW3t+uCCy44oT85YciQIbrooos6Hm/WlVdeqby8PD333HM6fPiw/vu//1s5OTmaM2fOCY8dM2aMZs+eLUn64Q9/qJ07d6bd9t69ezV//nzT+9STjRs3asOGDRo8eLBuuOEGw89LNBRvv/22YrGY4/uVzAcffKA9e/ZIkkaOHNnx72aOuxF1dXUdr9O3b1+be53a6NGjO8Ye5s+fr/feey/lY9vb27V48WK9//77ru2PGUE55l6cp6mYad+87r6SfBIg6WRyZfq+ffu0ceNGZWVlpTzJr776auXk5GjLli364IMPTL9GonpJVDtPPfVUl3/vbObMmcrKytK+ffu0evVq06/lpHvuuUeSdOutt+rkk0829Jz9+/dLks4777wTupMyIR6Pd/y3meNuRFFRUceXjI8++sjObqaVOAeqqqr0xz/+0bXXcUNQjrnX52kyfh88T/BNgPghTaW/D4rPmTNHWVlZJ/w+0b1lZfB83LhxGjt2rCorKzu6ml577TVVVFRo1KhRJwyAjxs3TpK0devWLo2hF9566y09//zz6tu3r2699VZDz3n++efV0NCgoUOHasOGDZo/f76mTZtmOICsGD16tEaMGCFJ2r17tyTzxz2dk046SZMmTdLKlStVWFiompoavfDCC47/HQlnn322pOPnQHt7u2uv47QgHXMvzlO7/NJe+iZAjMjEYPqf/vQnffrppxo2bJi+8IUvdPndpEmTNHr0aDU0NOiZZ54xve3EIHR5eXmXQEh8M+s+wDhgwABJx6dYJnPzzTcnnaI4derUpI9fvnx5ymmNVVU9V3j//u//rra2Nt1www0aNGhQj4+vrq7W3LlzVV1dreHDh+tHP/qRnn32WX344Yfatm2bFixY4NiAb3FxsWbMmKEVK1YoJydHtbW1WrdunSTzx727zsdt7969Wr16taZMmaKKigpdccUVqqurc+RvSKakpESSMjaA6xSvj7mZcz2T52k6QRo8TwhEgGSyjIvFYvr9738v6cRSO/H/zzzzjOrr601tt/PU3/Ly8i6/Ky8vV3t7+wlTiBMVkNfVR8IHH3ygJ598UgUFBYbHWl555RWde+65uuGGG7Rq1Srt2rVL7e3tGjlypL73ve/plVde0Q9+8ANL+9O5kdi9e7fKy8s1evRotbS06LbbbtPRo0ctHXcjYrGYFi1apO3bt1vad7P8cg4YEcRj7uZ5apXfu68knwWIkbIsE1VIYr737NmzO/pECwoK9LWvfU2Ste6rr3zlK+rXr582b97c0bWSsH//fq1fv16FhYUdryFJhw4dkqSUC5iWLl3aZWriwYMH0+5DuqmNpaXGjueCBQsUi8V07bXXppxo0F0sFtPvfvc73XjjjZo0aZJGjRqlb37zm9q2bZtycnJ07733pqyajGpubtZHH32kVatWacaMGXruueckWTvu3SWOW0lJic466yz99Kc/VU5Ojh566CGVlZXZ2u+eJM4BszOXJHXp8uppbUji9050k/nhmFs51zNxnqZipvrwS/eV5LMASSeTabx9+3a98847ys/P71iBnQiTXbt2afPmzaa3mSjZJ0+enLSsTkw57VzaJ75pTZo0Kel4jBeqqqr0X//1X+rdu7fuuusuS9s4evSoXnjhBc2ePVs7duyQdHzGjlmdG4khQ4bonHPO0Y033tixTcnacU8lHo+rurpaS5Ys0T333KOsrCwtXrxYBQUFpvfdqLffflvS8XPA7ALBzlVyuv784uLijvPr2LFjFvayq6Af8wSnzlMrglB9SD4MEL9UIYkpuolB80T3lZWpu0OHDtWFF15o6LHnn3++Ro0aJUlas2aN4vG4hg0bZmkFr1seeOABHT16VF//+teTXvrCqJaWFr366quSjk+PdprV427Eww8/rF27dmnQoEG6/vrrre5ijxLnQGlpadLV9ek0NjZ2VKXp3qfE72KxmD755BPrO6twHPPu3D5Pg1p9SD4MkHQymcpPP/20YrGYJk2apIsvvljTpk1TW1tbxyCgGXPnzlV2drY2btyYdnXss88+K+nv38wqKio6pm4+8MADGjPGH99Kjhw5oqVLlyorK0s//vGPLW8nKytL5513nqTUEwXssHrcjWhtbdXixYslSTfddJNr34g/+OCDju64hQsX6owzzkj52OzsbN1+++067bTTOv5t/fr1ko5Xa6mq2O985zuSpFdffVXNzc229jcMx7w7t8/T7oJSfUg+DRA/VCFHjhzRiy++ePw1li1TVlaW1q5da/obWuc1JT2Fz6pVqyQdn0Kck5MjSbrjjjtUWVmpgQMHau3atbr77rs1YcIEFRcXKycnR0VFRZo4caL+8z//09UFbd099NBDOnjwoGbMmJHyW+RNN92kVatW6frrr9d5552n0tJS5ebmqqSkRBdddJHKy8s1fvx4SbI0qy0du8fdiN/97nfau3evSkpKdN1111nf2R7MmzdPlZWVKikp0UsvvaSf/OQnGjdunAoLC5WXl6dTTz1V3/rWt7Rp0yb967/+a5e/4Ve/+pVaW1s1efJkPfHEExo/frzy8/OVl5enz3/+83rwwQf1ta99TfF4XL/4xS9s7WdQj7mX52mQqw9JMn91PI9tfHRMxg7kihUrdNlll3VMpbQyeD5t2jSNGDFCDQ0NPS4EW7t2rWpqajRo0CDNmDFDa9asUU1NjcrKyvToo4/qggsu0K233ppyHUYsFtN9992nLVu2JP398uXL077+/fffb+jaTJLU0NCghQsXasGCBSm/Cebn52v69OmaPn162m398pe/1Nq1aw29rlF2j7sRra2tWrJkiRYtWqRbbrlFy5cvd2Ul8+HDhzVr1iw99thjmjhxom677TbddtttSffn/vvv73LFgu3bt2vevHlauHChysrKkg5Ax+Nx3XPPPdq4cWPa/ejp/Lnxxht9c8zNnOtenqfdBan6kHxagUj+qELWrVunffv2SZJqamoMn+SdJcZO/vjHP/Y4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" alt="D.A Viagens Particulares Logo" class="logo-img">
+    </div>
+
     <h2>D.A Viagens Particulares</h2>
     <div class="subtitle">Conforto, segurança e pontualidade</div>
 
-    <div class="form-group">
-        <label>Seu Nome:</label>
-        <input type="text" id="nome" placeholder="Digite seu nome completo">
-    </div>
+    <form id="formOrcamento" onsubmit="event.preventDefault();">
+        
+        <!-- Bloco 1: Seus Dados -->
+        <div class="form-section-block">
+            <div class="section-title">👤 1. Seus Dados</div>
+            <div class="form-group">
+                <label>Seu Nome:</label>
+                <input type="text" id="nome" placeholder="Digite seu nome completo" required>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+                <label>WhatsApp / Telefone para Contato:</label>
+                <input type="tel" id="telefone" placeholder="Ex: (19) 99999-9999" onkeyup="aplicarMascaraTelefone(this)" required>
+            </div>
+        </div>
 
-    <div class="form-group">
-        <label>Origem (Endereço Completo de Saída):</label>
-        <input type="text" id="origem" placeholder="Ex: Rua Exemplo, 123, Limeira - SP">
-    </div>
+        <!-- Bloco 2: Rota e Roteiro -->
+        <div class="form-section-block">
+            <div class="section-title">📍 2. Rota e Roteiro</div>
+            <div class="form-group">
+                <label>Origem (Endereço Completo de Saída):</label>
+                <input type="text" id="origem" placeholder="Ex: Rua Exemplo, 123, Limeira - SP" required>
+            </div>
 
-    <div class="form-group">
-        <label>Destino (Endereço Completo de Chegada):</label>
-        <input type="text" id="destino" placeholder="Ex: Av. Principal, 456, Aeroporto - SP">
-    </div>
+            <div class="form-group">
+                <label>Destino (Endereço Completo de Chegada):</label>
+                <input type="text" id="destino" placeholder="Ex: Av. Principal, 456, Aeroporto - SP" required>
+            </div>
 
-    <div class="form-group">
-        <label>Parada Extra no Caminho (Opcional):</label>
-        <input type="text" id="paradaExtra" placeholder="Ex: Passar em Jundiaí por 10 min">
-        <div class="aviso-parada">💡 Se a parada for fora da rota ou entrar em outra cidade, some esse desvio nos quilômetros abaixo.</div>
-    </div>
+            <div class="form-group">
+                <label>Parada Extra no Caminho (Opcional):</label>
+                <input type="text" id="paradaExtra" placeholder="Ex: Passar em Jundiaí por 10 min">
+                <div class="aviso-parada">💡 Se a parada for fora da rota ou entrar em outra cidade, some esse desvio nos quilômetros abaixo.</div>
+            </div>
 
-    <div class="map-helper">
-        📍 <strong>Dica de Rota:</strong> Consulte os quilômetros no 
-        <a href="https://maps.google.com" target="_blank">Google Maps</a> e informe abaixo.
-    </div>
+            <div class="map-helper">
+                🗺️ Consulte a quilometragem exata no 
+                <a href="https://maps.google.com" target="_blank">Google Maps</a> e informe abaixo.
+            </div>
 
-    <div class="form-group">
-        <label>Distância em Quilômetros (Km):</label>
-        <input type="number" id="distanciaKm" placeholder="Ex: 35">
-    </div>
+            <div class="form-group">
+                <label>Distância em Quilômetros (Km):</label>
+                <input type="number" id="distanciaKm" placeholder="Ex: 35" required>
+            </div>
 
-    <div class="form-group">
-        <label>Quantidade de Passageiros:</label>
-        <select id="qtdPassageiros">
-            <option value="1">1 Passageiro</option>
-            <option value="2">2 Passageiros</option>
-            <option value="3">3 Passageiros</option>
-            <option value="4" selected>4 Passageiros (Máximo)</option>
-        </select>
-    </div>
+            <div class="form-group" style="margin-bottom: 0;">
+                <label>Quantidade de Passageiros:</label>
+                <select id="qtdPassageiros">
+                    <option value="1">1 Passageiro</option>
+                    <option value="2">2 Passageiros</option>
+                    <option value="3">3 Passageiros</option>
+                    <option value="4" selected>4 Passageiros (Máximo)</option>
+                </select>
+            </div>
+        </div>
 
-    <div class="form-group">
-        <label>Tipo de Viagem:</label>
-        <select id="tipoViagem" onchange="verificarCarencia()">
-            <option value="ida">Somente Ida</option>
-            <option value="idaVolta">Ida e Volta</option>
-        </select>
-        <div id="textoCarencia" class="aviso-carencia">⚠️ *Ida e Volta: Inclui até 1 hora de carência/espera no destino. Acima disso há reajuste.*</div>
-    </div>
+        <!-- Bloco 3: Data e Horário -->
+        <div class="form-section-block">
+            <div class="section-title">📅 3. Data e Horário</div>
+            <div class="form-group">
+                <label>Tipo de Viagem:</label>
+                <select id="tipoViagem" onchange="verificarCarencia()">
+                    <option value="ida">Somente Ida</option>
+                    <option value="idaVolta">Ida e Volta</option>
+                </select>
+                <div id="textoCarencia" class="aviso-carencia">⚠️ *Ida e Volta: Inclui até 1 hora de carência/espera no destino. Acima disso há reajuste.*</div>
+            </div>
 
-    <div class="form-group">
-        <label>Data Desejada:</label>
-        <input type="date" id="dataViagem">
-    </div>
+            <div class="form-group">
+                <label>Data Desejada:</label>
+                <input type="date" id="dataViagem" required>
+            </div>
 
-    <div class="form-group">
-        <label>Horário Desejado:</label>
-        <input type="time" id="horarioViagem">
-    </div>
+            <div class="form-group">
+                <label>Horário Desejado:</label>
+                <input type="time" id="horarioViagem" required>
+            </div>
 
-    <div class="form-group">
-        <label>Observações Adicionais (Opcional):</label>
-        <textarea id="observacoes" placeholder="Ex: Malas grandes, portão azul, etc."></textarea>
-    </div>
+            <div class="form-group" style="margin-bottom: 0;">
+                <label>Observações Adicionais (Opcional):</label>
+                <textarea id="observacoes" placeholder="Ex: Malas grandes, portão azul, etc."></textarea>
+            </div>
+        </div>
 
-    <button onclick="calcularOrcamento()">Calcular Orçamento</button>
+        <button class="btn-calcular" onclick="calcularOrcamento()">Calcular Orçamento</button>
+        <button type="button" class="btn-limpar" onclick="limparFormulario()">Limpar Formulário / Novo Orçamento</button>
+    </form>
 
     <div id="resultado">
         <h3>Resumo do Pré-Orçamento</h3>
         <p id="detalhesRota"></p>
         <div class="valor-destaque" id="valorFinal"></div>
         <div class="aviso-pedagio" id="textoAvisoFinal">* Valor estimado. Pedágios serão somados no fechamento final.</div>
-        <button onclick="enviarWhatsApp()" style="background: #25d366; color: #fff; margin-top: 15px;">Falar no WhatsApp e Agendar</button>
+        <button onclick="enviarWhatsApp()" style="background: #25d366; color: #fff; margin-top: 10px; width: 100%; padding: 14px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 15px;">Falar no WhatsApp e Agendar</button>
     </div>
 
     <!-- Termos e Condições / Política -->
@@ -254,6 +363,20 @@
 
     let dadosOrcamento = {};
 
+    // Máscara automática para telefone / WhatsApp (formato brasileiro)
+    function aplicarMascaraTelefone(input) {
+        let v = input.value.replace(/\D/g, "");
+        if (v.length > 11) v = v.slice(0, 11);
+        if (v.length > 6) {
+            v = `(${v.slice(0, 2)}) ${v.slice(2, 7)}-${v.slice(7)}`;
+        } else if (v.length > 2) {
+            v = `(${v.slice(0, 2)}) ${v.slice(2)}`;
+        } else if (v.length > 0) {
+            v = `(${v}`;
+        }
+        input.value = v;
+    }
+
     function verificarCarencia() {
         const tipo = document.getElementById('tipoViagem').value;
         const aviso = document.getElementById('textoCarencia');
@@ -265,9 +388,10 @@
     }
 
     function calcularOrcamento() {
-        const nome = document.getElementById('nome').value;
-        const origem = document.getElementById('origem').value;
-        const destino = document.getElementById('destino').value;
+        const nome = document.getElementById('nome').value.trim();
+        const telefone = document.getElementById('telefone').value.trim();
+        const origem = document.getElementById('origem').value.trim();
+        const destino = document.getElementById('destino').value.trim();
         const paradaExtra = document.getElementById('paradaExtra').value.trim();
         const distanciaInput = parseFloat(document.getElementById('distanciaKm').value);
         const qtdPassageiros = document.getElementById('qtdPassageiros').value;
@@ -276,7 +400,7 @@
         const horario = document.getElementById('horarioViagem').value;
         const observacoes = document.getElementById('observacoes').value.trim();
 
-        if (!nome || !origem || !destino || isNaN(distanciaInput) || !data || !horario) {
+        if (!nome || !telefone || !origem || !destino || isNaN(distanciaInput) || !data || !horario) {
             alert('Por favor, preencha todos os campos obrigatórios corretamente!');
             return;
         }
@@ -293,7 +417,7 @@
         const tipoTexto = (tipoViagemSelect === 'ida') ? 'Somente Ida' : 'Ida e Volta (Com até 1h de carência)';
 
         dadosOrcamento = {
-            nome, origem, destino, paradaExtra, tipoViagem: tipoTexto,
+            nome, telefone, origem, destino, paradaExtra, tipoViagem: tipoTexto,
             tipoSimples: tipoViagemSelect,
             qtdPassageiros,
             data, horario, observacoes, distanciaOriginal: distanciaKmOriginal,
@@ -301,6 +425,8 @@
         };
 
         let htmlDetalhes = `
+            <strong>Nome:</strong> ${nome}<br>
+            <strong>Contato:</strong> ${telefone}<br>
             <strong>De:</strong> ${origem}<br>
             <strong>Para:</strong> ${destino}<br>
             ${paradaExtra ? `<strong>Parada Extra:</strong> ${paradaExtra}<br>` : ''}
@@ -317,6 +443,16 @@
         document.getElementById('detalhesRota').innerHTML = htmlDetalhes;
         document.getElementById('valorFinal').innerHTML = `R$ ${valorTotal.toFixed(2)}`;
         document.getElementById('resultado').style.display = 'block';
+        
+        // Rola suavemente até o resultado
+        document.getElementById('resultado').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function limparFormulario() {
+        document.getElementById('formOrcamento').reset();
+        document.getElementById('resultado').style.display = 'none';
+        document.getElementById('textoCarencia').style.display = 'none';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function enviarWhatsApp() {
@@ -329,7 +465,9 @@
         let textoParada = dadosOrcamento.paradaExtra ? `\n📍 *Parada Extra:* ${dadosOrcamento.paradaExtra}` : '';
         let textoObs = dadosOrcamento.observacoes ? `\n📝 *Observações:* ${dadosOrcamento.observacoes}` : '';
 
-        const mensagem = `Olá! Meu nome é *${dadosOrcamento.nome}*.
+        const mensagem = `Olá! Meu nome é *${dadosOrcamento.name || dadosOrcamento.nome}*.
+Meu contato: *${dadosOrcamento.telefone}*
+
 Gostaria de confirmar um agendamento de viagem:
 
 📍 *Origem:* ${dadosOrcamento.origem}
