@@ -75,6 +75,12 @@
             resize: vertical;
             height: 80px;
         }
+        .aviso-parada {
+            font-size: 11px;
+            color: var(--text-gray);
+            margin-top: 4px;
+            font-style: italic;
+        }
         .map-helper {
             background: #262626;
             padding: 12px;
@@ -112,6 +118,18 @@
         }
         button:hover {
             opacity: 0.9;
+        }
+        .btn-limpar {
+            background: #333;
+            color: #aaa;
+            border: 1px solid #555;
+            margin-top: 8px;
+            font-size: 14px;
+            padding: 10px;
+        }
+        .btn-limpar:hover {
+            background: #444;
+            color: #fff;
         }
         #resultado {
             margin-top: 20px;
@@ -158,71 +176,80 @@
     <h2>D.A Viagens Particulares</h2>
     <div class="subtitle">Conforto, segurança e pontualidade</div>
 
-    <div class="form-group">
-        <label>Seu Nome:</label>
-        <input type="text" id="nome" placeholder="Digite seu nome completo">
-    </div>
+    <form id="formOrcamento" onsubmit="event.preventDefault();">
+        <div class="form-group">
+            <label>Seu Nome:</label>
+            <input type="text" id="nome" placeholder="Digite seu nome completo" required>
+        </div>
 
-    <div class="form-group">
-        <label>Origem (Endereço Completo de Saída):</label>
-        <input type="text" id="origem" placeholder="Ex: Rua Exemplo, 123, Limeira - SP">
-    </div>
+        <div class="form-group">
+            <label>WhatsApp / Telefone para Contato:</label>
+            <input type="tel" id="telefone" placeholder="Ex: (19) 99999-9999" onkeyup="aplicarMascaraTelefone(this)" required>
+        </div>
 
-    <div class="form-group">
-        <label>Destino (Endereço Completo de Chegada):</label>
-        <input type="text" id="destino" placeholder="Ex: Av. Principal, 456, Aeroporto - SP">
-    </div>
+        <div class="form-group">
+            <label>Origem (Endereço Completo de Saída):</label>
+            <input type="text" id="origem" placeholder="Ex: Rua Exemplo, 123, Limeira - SP" required>
+        </div>
 
-    <div class="form-group">
-        <label>Parada Extra no Caminho (Opcional):</label>
-        <input type="text" id="paradaExtra" placeholder="Ex: Passar em Jundiaí por 10 min (Deixe em branco)">
-    </div>
+        <div class="form-group">
+            <label>Destino (Endereço Completo de Chegada):</label>
+            <input type="text" id="destino" placeholder="Ex: Av. Principal, 456, Aeroporto - SP" required>
+        </div>
 
-    <div class="map-helper">
-        📍 <strong>Dica de Rota:</strong> Consulte os quilômetros no 
-        <a href="https://maps.google.com" target="_blank">Google Maps</a> e informe abaixo.
-    </div>
+        <div class="form-group">
+            <label>Parada Extra no Caminho (Opcional):</label>
+            <input type="text" id="paradaExtra" placeholder="Ex: Passar em Jundiaí por 10 min">
+            <div class="aviso-parada">💡 Se a parada for fora da rota ou entrar em outra cidade, some esse desvio nos quilômetros abaixo.</div>
+        </div>
 
-    <div class="form-group">
-        <label>Distância em Quilômetros (Km):</label>
-        <input type="number" id="distanciaKm" placeholder="Ex: 35">
-    </div>
+        <div class="map-helper">
+            📍 <strong>Dica de Rota:</strong> Consulte os quilômetros no 
+            <a href="https://maps.google.com" target="_blank">Google Maps</a> e informe abaixo.
+        </div>
 
-    <div class="form-group">
-        <label>Quantidade de Passageiros:</label>
-        <select id="qtdPassageiros">
-            <option value="1">1 Passageiro</option>
-            <option value="2">2 Passageiros</option>
-            <option value="3">3 Passageiros</option>
-            <option value="4" selected>4 Passageiros (Máximo)</option>
-        </select>
-    </div>
+        <div class="form-group">
+            <label>Distância em Quilômetros (Km):</label>
+            <input type="number" id="distanciaKm" placeholder="Ex: 35" required>
+        </div>
 
-    <div class="form-group">
-        <label>Tipo de Viagem:</label>
-        <select id="tipoViagem" onchange="verificarCarencia()">
-            <option value="ida">Somente Ida</option>
-            <option value="idaVolta">Ida e Volta</option>
-        </select>
-        <div id="textoCarencia" class="aviso-carencia">⚠️ *Ida e Volta: Inclui até 1 hora de carência/espera no destino. Acima disso há reajuste.*</div>
-    </div>
+        <div class="form-group">
+            <label>Quantidade de Passageiros:</label>
+            <select id="qtdPassageiros">
+                <option value="1">1 Passageiro</option>
+                <option value="2">2 Passageiros</option>
+                <option value="3">3 Passageiros</option>
+                <option value="4" selected>4 Passageiros (Máximo)</option>
+            </select>
+        </div>
 
-    <div class="form-group">
-        <label>Data Desejada:</label>
-        <input type="date" id="dataViagem">
-    </div>
+        <div class="form-group">
+            <label>Tipo de Viagem:</label>
+            <select id="tipoViagem" onchange="verificarCarencia()">
+                <option value="ida">Somente Ida</option>
+                <option value="idaVolta">Ida e Volta</option>
+            </select>
+            <div id="textoCarencia" class="aviso-carencia">⚠️ *Ida e Volta: Inclui até 1 hora de carência/espera no destino. Acima disso há reajuste.*</div>
+        </div>
 
-    <div class="form-group">
-        <label>Horário Desejado:</label>
-        <input type="time" id="horarioViagem">
-    </div>
+        <div class="form-group">
+            <label>Data Desejada:</label>
+            <input type="date" id="dataViagem" required>
+        </div>
 
-    <div class="form-group">
-        <label>Observações Adicionais (Opcional):</label>
-        <textarea id="observacoes" placeholder="Ex: Malas grandes, portão azul, etc."></textarea>
-    </div>
+        <div class="form-group">
+            <label>Horário Desejado:</label>
+            <input type="time" id="horarioViagem" required>
+        </div>
 
-    <button onclick="calcularOrcamento()">Calcular Orçamento</button>
+        <div class="form-group">
+            <label>Observações Adicionais (Opcional):</label>
+            <textarea id="observacoes" placeholder="Ex: Malas grandes, portão azul, etc."></textarea>
+        </div>
+
+        <button onclick="calcularOrcamento()">Calcular Orçamento</button>
+        <button type="button" class="btn-limpar" onclick="limparFormulario()">Limpar Formulário / Novo Orçamento</button>
+    </form>
 
     <div id="resultado">
         <h3>Resumo do Pré-Orçamento</h3>
@@ -247,6 +274,20 @@
 
     let dadosOrcamento = {};
 
+    // Máscara automática para telefone / WhatsApp (formato brasileiro)
+    function aplicarMascaraTelefone(input) {
+        let v = input.value.replace(/\D/g, "");
+        if (v.length > 11) v = v.slice(0, 11);
+        if (v.length > 6) {
+            v = `(${v.slice(0, 2)}) ${v.slice(2, 7)}-${v.slice(7)}`;
+        } else if (v.length > 2) {
+            v = `(${v.slice(0, 2)}) ${v.slice(2)}`;
+        } else if (v.length > 0) {
+            v = `(${v}`;
+        }
+        input.value = v;
+    }
+
     function verificarCarencia() {
         const tipo = document.getElementById('tipoViagem').value;
         const aviso = document.getElementById('textoCarencia');
@@ -258,9 +299,10 @@
     }
 
     function calcularOrcamento() {
-        const nome = document.getElementById('nome').value;
-        const origem = document.getElementById('origem').value;
-        const destino = document.getElementById('destino').value;
+        const nome = document.getElementById('nome').value.trim();
+        const telefone = document.getElementById('telefone').value.trim();
+        const origem = document.getElementById('origem').value.trim();
+        const destino = document.getElementById('destino').value.trim();
         const paradaExtra = document.getElementById('paradaExtra').value.trim();
         const distanciaInput = parseFloat(document.getElementById('distanciaKm').value);
         const qtdPassageiros = document.getElementById('qtdPassageiros').value;
@@ -269,7 +311,7 @@
         const horario = document.getElementById('horarioViagem').value;
         const observacoes = document.getElementById('observacoes').value.trim();
 
-        if (!nome || !origem || !destino || isNaN(distanciaInput) || !data || !horario) {
+        if (!nome || !telefone || !origem || !destino || isNaN(distanciaInput) || !data || !horario) {
             alert('Por favor, preencha todos os campos obrigatórios corretamente!');
             return;
         }
@@ -286,7 +328,7 @@
         const tipoTexto = (tipoViagemSelect === 'ida') ? 'Somente Ida' : 'Ida e Volta (Com até 1h de carência)';
 
         dadosOrcamento = {
-            nome, origem, destino, paradaExtra, tipoViagem: tipoTexto,
+            nome, telefone, origem, destino, paradaExtra, tipoViagem: tipoTexto,
             tipoSimples: tipoViagemSelect,
             qtdPassageiros,
             data, horario, observacoes, distanciaOriginal: distanciaKmOriginal,
@@ -294,6 +336,8 @@
         };
 
         let htmlDetalhes = `
+            <strong>Nome:</strong> ${nome}<br>
+            <strong>Contato:</strong> ${telefone}<br>
             <strong>De:</strong> ${origem}<br>
             <strong>Para:</strong> ${destino}<br>
             ${paradaExtra ? `<strong>Parada Extra:</strong> ${paradaExtra}<br>` : ''}
@@ -310,6 +354,16 @@
         document.getElementById('detalhesRota').innerHTML = htmlDetalhes;
         document.getElementById('valorFinal').innerHTML = `R$ ${valorTotal.toFixed(2)}`;
         document.getElementById('resultado').style.display = 'block';
+        
+        // Rrola suavemente até o resultado
+        document.getElementById('resultado').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function limparFormulario() {
+        document.getElementById('formOrcamento').reset();
+        document.getElementById('resultado').style.display = 'none';
+        document.getElementById('textoCarencia').style.display = 'none';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function enviarWhatsApp() {
@@ -323,6 +377,8 @@
         let textoObs = dadosOrcamento.observacoes ? `\n📝 *Observações:* ${dadosOrcamento.observacoes}` : '';
 
         const mensagem = `Olá! Meu nome é *${dadosOrcamento.nome}*.
+Meu contato: *${dadosOrcamento.telefone}*
+
 Gostaria de confirmar um agendamento de viagem:
 
 📍 *Origem:* ${dadosOrcamento.origem}
