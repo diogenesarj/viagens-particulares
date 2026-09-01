@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>D.A Viagens Particulares - Pré-Orçamento</title>
-    <!-- Script oficial do Google Maps com a sua chave integrada -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCm8qa9TzcCcu42tsIDHeXyc-ud3qD6N10&libraries=places"></script>
     <style>
         :root {
             --primary-gold: #d4af37;
@@ -79,13 +77,18 @@
         }
         .map-helper {
             background: #262626;
-            padding: 10px;
+            padding: 12px;
             border-radius: 6px;
             font-size: 12px;
-            color: #4cd137;
+            color: var(--text-gray);
             margin-bottom: 15px;
-            border: 1px dashed #444;
+            border: 1px dashed var(--primary-gold);
             text-align: center;
+        }
+        .map-helper a {
+            color: var(--primary-gold);
+            font-weight: bold;
+            text-decoration: underline;
         }
         .aviso-carencia {
             font-size: 11px;
@@ -162,12 +165,12 @@
 
     <div class="form-group">
         <label>Origem (Endereço Completo de Saída):</label>
-        <input type="text" id="origem" placeholder="Ex: Rua Exemplo, 123, Bairro, Limeira - SP" onblur="calcularDistanciaAuto()">
+        <input type="text" id="origem" placeholder="Ex: Rua Exemplo, 123, Limeira - SP">
     </div>
 
     <div class="form-group">
         <label>Destino (Endereço Completo de Chegada):</label>
-        <input type="text" id="destino" placeholder="Ex: Av. Principal, 456, Bairro, Aeroporto - SP" onblur="calcularDistanciaAuto()">
+        <input type="text" id="destino" placeholder="Ex: Av. Principal, 456, Aeroporto - SP">
     </div>
 
     <div class="form-group">
@@ -175,13 +178,14 @@
         <input type="text" id="paradaExtra" placeholder="Ex: Passar em Jundiaí por 10 min (Deixe em branco)">
     </div>
 
-    <div class="map-helper" id="statusMapa">
-        🛰️ <i>Preencha origem e destino para o cálculo automático de distância via Google Maps.</i>
+    <div class="map-helper">
+        📍 <strong>Dica de Rota:</strong> Consulte os quilômetros no 
+        <a href="https://maps.google.com" target="_blank">Google Maps</a> e informe abaixo.
     </div>
 
     <div class="form-group">
         <label>Distância em Quilômetros (Km):</label>
-        <input type="number" id="distanciaKm" placeholder="Calculado automaticamente ou informe">
+        <input type="number" id="distanciaKm" placeholder="Ex: 35">
     </div>
 
     <div class="form-group">
@@ -243,41 +247,6 @@
 
     let dadosOrcamento = {};
 
-    // Função que calcula a distância usando a API do Google Maps automaticamente
-    function calcularDistanciaAuto() {
-        const origem = document.getElementById('origem').value;
-        const destino = document.getElementById('destino').value;
-        const statusMapa = document.getElementById('statusMapa');
-
-        if (origem.length > 5 && destino.length > 5) {
-            statusMapa.innerHTML = "🔄 Calculando rota com o Google Maps...";
-            
-            const service = new google.maps.DistanceMatrixService();
-            service.getDistanceMatrix({
-                origins: [origem],
-                destinations: [destino],
-                travelMode: 'DRIVING',
-                unitSystem: google.maps.UnitSystem.METRIC
-            }, (response, status) => {
-                if (status == 'OK') {
-                    const resultadoOriginal = response.rows[0].elements[0];
-                    if (resultadoOriginal.status == 'OK') {
-                        // Distância em metros convertida para quilômetros
-                        const distanciaEmMetros = resultadoOriginal.distance.value;
-                        const distanciaKm = Math.round(distanciaEmMetros / 1000);
-                        
-                        document.getElementById('distanciaKm').value = distanciaKm;
-                        statusMapa.innerHTML = `✅ Distância calculada com sucesso pelo Google Maps: <strong>${distanciaKm} km</strong>`;
-                    } else {
-                        statusMapa.innerHTML = "⚠️ Não foi possível calcular automaticamente. Por favor, informe os km.";
-                    }
-                } else {
-                    statusMapa.innerHTML = "⚠️ Erro na consulta do mapa. Informe os km manualmente se necessário.";
-                }
-            });
-        }
-    }
-
     function verificarCarencia() {
         const tipo = document.getElementById('tipoViagem').value;
         const aviso = document.getElementById('textoCarencia');
@@ -307,7 +276,7 @@
 
         const distanciaKmOriginal = distanciaInput;
 
-        // Dobra o km nos bastidores
+        // Dobra o km nos bastidores (ida e volta do cálculo)
         let kmCalculo = distanciaKmOriginal * 2;
 
         // Valores aplicados internamente: R$ 1,25 (ida) / R$ 1,35 (ida e volta)
@@ -330,7 +299,7 @@
             ${paradaExtra ? `<strong>Parada Extra:</strong> ${paradaExtra}<br>` : ''}
             <strong>Passageiros:</strong> ${qtdPassageiros} pessoa(s)<br>
             <strong>Data/Hora:</strong> ${data.split('-').reverse().join('/')} às ${horario}<br>
-            <strong>Modalidade:</strong> ${tipoViagemSelect === 'ida' ? 'Somente Ida' : 'Ida e Volta'} (${distanciaKmOriginal} km estimados)
+            <strong>Modalidade:</strong> ${tipoViagemSelect === 'ida' ? 'Somente Ida' : 'Ida e Volta'} (${distanciaKmOriginal} km informados)
             ${observacoes ? `<br><strong>Obs:</strong> ${observacoes}` : ''}
         `;
 
@@ -363,7 +332,7 @@ Gostaria de confirmar um agendamento de viagem:
 📅 *Data:* ${dadosOrcamento.data.split('-').reverse().join('/')} às ${dadosOrcamento.horario}
 💰 *Valor Estimado:* R$ ${dadosOrcamento.valorTotal} *(Sujeito a acréscimo de pedágios)*${textoObs}
 
-*(Info interna - Km base do Maps: ${dadosOrcamento.distanciaOriginal}km)*`;
+*(Info interna - Km informado: ${dadosOrcamento.distanciaOriginal}km)*`;
 
         const url = `https://api.whatsapp.com/send?phone=${fone}&text=${encodeURIComponent(mensagem)}`;
         window.open(url, '_blank');
