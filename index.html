@@ -149,6 +149,17 @@
             font-style: italic;
             display: none;
         }
+        .aviso-encomenda {
+            font-size: 11px;
+            color: #ff9800;
+            margin-top: 5px;
+            font-weight: bold;
+            display: none;
+            background: rgba(255, 152, 0, 0.1);
+            padding: 6px 8px;
+            border-radius: 4px;
+            border-left: 3px solid #ff9800;
+        }
         button.btn-calcular {
             width: 100%;
             background: linear-gradient(135deg, #d4af37 0%, #aa8c2c 100%);
@@ -245,7 +256,6 @@
 
 <div class="container">
     <div class="logo-container">
-        <!-- Logo atualizada com o texto D.A. LOGÍSTICA -->
         <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><rect width='100%' height='100%' fill='%23121212'/><circle cx='100' cy='100' r='90' fill='none' stroke='%23d4af37' stroke-width='3'/><circle cx='100' cy='100' r='80' fill='none' stroke='%23d4af37' stroke-width='1.5' stroke-dasharray='4,4'/><text x='100' y='85' font-family='Arial, sans-serif' font-weight='bold' font-size='42' fill='%23d4af37' text-anchor='middle' letter-spacing='2'>DA</text><text x='100' y='122' font-family='Arial, sans-serif' font-weight='bold' font-size='13' fill='%23ffffff' text-anchor='middle' letter-spacing='3'>LOGÍSTICA</text></svg>" alt="D.A. Logística Logo" class="logo-img">
     </div>
 
@@ -315,8 +325,10 @@
                 <select id="tipoViagem" onchange="verificarCarencia()">
                     <option value="ida">Trajeto Simples (Ida)</option>
                     <option value="idaVolta">Ida e Volta</option>
+                    <option value="encomenda">Transporte de Encomendas (Sem Passageiros)</option>
                 </select>
                 <div id="textoCarencia" class="aviso-carencia">⚠️ *Ida e Volta: Inclui até 1 hora de carência/espera no destino. Acima disso há reajuste.*</div>
+                <div id="textoEncomenda" class="aviso-encomenda">📦 Atenção: Esta aba é específica para transporte de encomendas/mercadorias SEM PASSAGEIROS. Valores exclusivos para cargas.</div>
             </div>
 
             <div class="form-group">
@@ -376,11 +388,16 @@
 
     function verificarCarencia() {
         const tipo = document.getElementById('tipoViagem').value;
-        const aviso = document.getElementById('textoCarencia');
+        const avisoCarencia = document.getElementById('textoCarencia');
+        const avisoEncomenda = document.getElementById('textoEncomenda');
+        
+        avisoCarencia.style.display = 'none';
+        avisoEncomenda.style.display = 'none';
+
         if (tipo === 'idaVolta') {
-            aviso.style.display = 'block';
-        } else {
-            aviso.style.display = 'none';
+            avisoCarencia.style.display = 'block';
+        } else if (tipo === 'encomenda') {
+            avisoEncomenda.style.display = 'block';
         }
     }
 
@@ -404,10 +421,21 @@
 
         const distanciaKmOriginal = distanciaInput;
         let kmCalculo = distanciaKmOriginal * 2;
-        let precoKm = (tipoViagemSelect === 'ida') ? 1.25 : 1.35;
+        let precoKm = 1.25; // padrão
+
+        if (tipoViagemSelect === 'ida') {
+            precoKm = 1.25;
+        } else if (tipoViagemSelect === 'idaVolta') {
+            precoKm = 1.35;
+        } else if (tipoViagemSelect === 'encomenda') {
+            precoKm = 1.05;
+        }
+
         let valorTotal = kmCalculo * precoKm;
 
-        const tipoTexto = (tipoViagemSelect === 'ida') ? 'Trajeto Simples (Ida)' : 'Ida e Volta (Com até 1h de carência)';
+        let tipoTexto = 'Trajeto Simples (Ida)';
+        if (tipoViagemSelect === 'idaVolta') tipoTexto = 'Ida e Volta (Com até 1h de carência)';
+        if (tipoViagemSelect === 'encomenda') tipoTexto = 'Transporte de Encomendas (Sem Passageiros)';
 
         dadosOrcamento = {
             nome, telefone, origem, destino, paradaExtra, tipoViagem: tipoTexto,
@@ -423,14 +451,16 @@
             <strong>De:</strong> ${origem}<br>
             <strong>Para:</strong> ${destino}<br>
             ${paradaExtra ? `<strong>Parada Extra:</strong> ${paradaExtra}<br>` : ''}
-            <strong>Passageiros / Volumes:</strong> ${qtdPassageiros}<br>
+            <strong>Volumes / Passageiros:</strong> ${qtdPassageiros}<br>
             <strong>Data/Hora:</strong> ${data.split('-').reverse().join('/')} às ${horario}<br>
-            <strong>Modalidade:</strong> ${tipoViagemSelect === 'ida' ? 'Trajeto Simples (Ida)' : 'Ida e Volta'} (${distanciaKmOriginal} km informados)
+            <strong>Modalidade:</strong> ${tipoTexto} (${distanciaKmOriginal} km informados)
             ${observacoes ? `<br><strong>Obs:</strong> ${observacoes}` : ''}
         `;
 
         if (tipoViagemSelect === 'idaVolta') {
             htmlDetalhes += `<br><span style="color: #d4af37; font-size: 12px;">🕒 Inclui até 1h de espera (sujeito a reajuste se passar).</span>`;
+        } else if (tipoViagemSelect === 'encomenda') {
+            htmlDetalhes += `<br><span style="color: #ff9800; font-size: 12px;">📦 Serviço exclusivo para encomendas/mercadorias (Sem Passageiros).</span>`;
         }
 
         document.getElementById('detalhesRota').innerHTML = htmlDetalhes;
@@ -443,14 +473,17 @@
         document.getElementById('formOrcamento').reset();
         document.getElementById('resultado').style.display = 'none';
         document.getElementById('textoCarencia').style.display = 'none';
+        document.getElementById('textoEncomenda').style.display = 'none';
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function enviarWhatsApp() {
         const fone = "5519978033636";
-        let mensagemCarencia = "";
+        let mensagemComplemento = "";
         if (dadosOrcamento.tipoSimples === 'idaVolta') {
-            mensagemCarencia = "\n🕒 *Condição:* Ida e Volta (Até 1h de carência inclusa)";
+            mensagemComplemento = "\n🕒 *Condição:* Ida e Volta (Até 1h de carência inclusa)";
+        } else if (dadosOrcamento.tipoSimples === 'encomenda') {
+            mensagemComplemento = "\n📦 *Condição:* Transporte de Encomendas (Sem Passageiros)";
         }
 
         let textoParada = dadosOrcamento.paradaExtra ? `\n📍 *Parada Extra:* ${dadosOrcamento.paradaExtra}` : '';
@@ -463,8 +496,8 @@ Gostaria de solicitar um orçamento via *D.A. Logística*:
 
 📍 *Origem:* ${dadosOrcamento.origem}
 🏁 *Destino:* ${dadosOrcamento.destino}${textoParada}
-👥 *Passageiros / Volumes:* ${dadosOrcamento.qtdPassageiros}
-🚗 *Modalidade:* ${dadosOrcamento.tipoViagem}${mensagemCarencia}
+👥 *Volumes / Passageiros:* ${dadosOrcamento.qtdPassageiros}
+🚗 *Modalidade:* ${dadosOrcamento.tipoViagem}${mensagemComplemento}
 📅 *Data:* ${dadosOrcamento.data.split('-').reverse().join('/')} às ${dadosOrcamento.horario}
 💰 *Valor Estimado:* R$ ${dadosOrcamento.valorTotal} *(Sujeito a acréscimo de pedágios)*${textoObs}
 
