@@ -337,26 +337,25 @@
         let precoKm = (tipoViagemSelect === 'ida') ? 1.25 : 1.35;
         let custoKmTotal = kmCalculo * precoKm;
 
-        // Definição automática do valor do pedágio embutido (já contemplando ida e volta)
+        // Valores reais de pedágio embutidos (Ida + Volta consolidadas)
         let valorPedagioEmbutido = 0;
         let nomeRotaTexto = "";
 
         switch(rotaSentido) {
             case 'regional':
-                valorPedagioEmbutido = 18.00;
+                valorPedagioEmbutido = 21.20; // Base real praças região próxima (ex: Araras/Leme ida e volta)
                 nomeRotaTexto = "Regional / Interior Próximo";
                 break;
             case 'campinas':
-                valorPedagioEmbutido = 50.00;
+                valorPedagioEmbutido = 45.00; // Base real Limeira + Nova Odessa/Sumaré ida e volta
                 nomeRotaTexto = "Campinas / Jundiaí";
                 break;
             case 'capital':
-                valorPedagioEmbutido = 100.00;
+                valorPedagioEmbutido = 98.00; // Base real corredor Anhanguera/Bandeirantes completo ida e volta
                 nomeRotaTexto = "São Paulo / Aeroportos / Litoral";
                 break;
             case 'longa':
-                // Estimativa proporcional de praças para viagens longas (ex: R$ 0,25 por km rodado total)
-                valorPedagioEmbutido = kmCalculo * 0.25;
+                valorPedagioEmbutido = kmCalculo * 0.25; // Proporcional para longas distâncias
                 nomeRotaTexto = "Interior Distante / Outras Rodovias";
                 break;
             case 'semPedagio':
@@ -366,7 +365,7 @@
                 break;
         }
 
-        // Soma o custo base + pedágios embutidos de forma invisível para o cliente
+        // Soma o custo base + pedágios reais embutidos de forma invisível
         let valorTotal = custoKmTotal + valorPedagioEmbutido;
 
         const tipoTexto = (tipoViagemSelect === 'ida') ? 'Somente Ida' : 'Ida e Volta (Com até 1h de carência)';
