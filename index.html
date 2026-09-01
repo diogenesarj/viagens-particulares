@@ -198,9 +198,20 @@
         </div>
 
         <div class="form-group">
+            <label>Sentido / Rota Principal:</label>
+            <select id="rotaSentido">
+                <option value="regional">Regional / Interior Próximo (Piracicaba, Rio Claro, Araras, etc.)</option>
+                <option value="campinas">Região de Campinas / Jundiaí</option>
+                <option value="capital" selected>São Paulo (Capital) / Aeroportos / Litoral</option>
+                <option value="longa">Interior Distante / Outras Rodovias (Até 1200km)</option>
+                <option value="semPedagio">Outras rotas sem pedágio / Local</option>
+            </select>
+        </div>
+
+        <div class="form-group">
             <label>Parada Extra no Caminho (Opcional):</label>
             <input type="text" id="paradaExtra" placeholder="Ex: Passar em Jundiaí por 10 min">
-            <div class="aviso-parada">💡 Se a parada for fora da rota ou entrar em outra cidade, informe os km totais considerando esse desvio.</div>
+            <div class="aviso-parada">💡 Se a parada for fora da rota, informe os km totais considerando esse desvio.</div>
         </div>
 
         <div class="map-helper">
@@ -255,7 +266,7 @@
         <h3>Resumo do Pré-Orçamento</h3>
         <p id="detalhesRota"></p>
         <div class="valor-destaque" id="valorFinal"></div>
-        <div class="aviso-pedagio" id="textoAvisoFinal">* Valor estimado. Pedágios serão somados no fechamento final.</div>
+        <div class="aviso-pedagio" id="textoAvisoFinal">* Valor estimado para fechamento da viagem.</div>
         <button onclick="enviarWhatsApp()" style="background: #25d366; color: #fff; margin-top: 15px;">Falar no WhatsApp e Agendar</button>
     </div>
 
@@ -303,6 +314,7 @@
         const telefone = document.getElementById('telefone').value.trim();
         const origem = document.getElementById('origem').value.trim();
         const destino = document.getElementById('destino').value.trim();
+        const rotaSentido = document.getElementById('rotaSentido').value;
         const paradaExtra = document.getElementById('paradaExtra').value.trim();
         const distanciaInput = parseFloat(document.getElementById('distanciaKm').value);
         const qtdPassageiros = document.getElementById('qtdPassageiros').value;
@@ -318,20 +330,52 @@
 
         const distanciaKmOriginal = distanciaInput;
 
-        // Dobra o km nos bastidores (ida e volta do cálculo)
+        // Dobra o km nos bastidores (ida e volta do cálculo de combustível/desgaste)
         let kmCalculo = distanciaKmOriginal * 2;
 
-        // Valores aplicados internamente: R$ 1,25 (ida) / R$ 1,35 (ida e volta)
+        // Valor base por km: R$ 1,25 (ida) / R$ 1,35 (ida e volta)
         let precoKm = (tipoViagemSelect === 'ida') ? 1.25 : 1.35;
-        let valorTotal = kmCalculo * precoKm;
+        let custoKmTotal = kmCalculo * precoKm;
+
+        // Definição automática do valor do pedágio embutido (já contemplando ida e volta)
+        let valorPedagioEmbutido = 0;
+        let nomeRotaTexto = "";
+
+        switch(rotaSentido) {
+            case 'regional':
+                valorPedagioEmbutido = 18.00;
+                nomeRotaTexto = "Regional / Interior Próximo";
+                break;
+            case 'campinas':
+                valorPedagioEmbutido = 50.00;
+                nomeRotaTexto = "Campinas / Jundiaí";
+                break;
+            case 'capital':
+                valorPedagioEmbutido = 100.00;
+                nomeRotaTexto = "São Paulo / Aeroportos / Litoral";
+                break;
+            case 'longa':
+                // Estimativa proporcional de praças para viagens longas (ex: R$ 0,25 por km rodado total)
+                valorPedagioEmbutido = kmCalculo * 0.25;
+                nomeRotaTexto = "Interior Distante / Outras Rodovias";
+                break;
+            case 'semPedagio':
+            default:
+                valorPedagioEmbutido = 0;
+                nomeRotaTexto = "Sem Pedágios / Local";
+                break;
+        }
+
+        // Soma o custo base + pedágios embutidos de forma invisível para o cliente
+        let valorTotal = custoKmTotal + valorPedagioEmbutido;
 
         const tipoTexto = (tipoViagemSelect === 'ida') ? 'Somente Ida' : 'Ida e Volta (Com até 1h de carência)';
 
         dadosOrcamento = {
-            nome, telefone, origem, destino, paradaExtra, tipoViagem: tipoTexto,
-            tipoSimples: tipoViagemSelect,
-            qtdPassageiros,
-            data, horario, observacoes, distanciaOriginal: distanciaKmOriginal,
+            nome, telefone, origem, destino, rotaTexto: nomeRotaTexto, paradaExtra, 
+            tipoViagem: tipoTexto, tipoSimples: tipoViagemSelect,
+            qtdPassageiros, data, horario, observacoes, 
+            distanciaOriginal: distanciaKmOriginal,
             valorTotal: valorTotal.toFixed(2)
         };
 
@@ -383,10 +427,11 @@ Gostaria de confirmar um agendamento de viagem:
 
 📍 *Origem:* ${dadosOrcamento.origem}
 🏁 *Destino:* ${dadosOrcamento.destino}${textoParada}
+🛣️ *Rota:* ${dadosOrcamento.rotaTexto}
 👥 *Passageiros:* ${dadosOrcamento.qtdPassageiros} pessoa(s)
 🚗 *Tipo:* ${dadosOrcamento.tipoViagem}${mensagemCarencia}
 📅 *Data:* ${dadosOrcamento.data.split('-').reverse().join('/')} às ${dadosOrcamento.horario}
-💰 *Valor Estimado:* R$ ${dadosOrcamento.valorTotal} *(Sujeito a acréscimo de pedágios)*${textoObs}
+💰 *Valor Final:* R$ ${dadosOrcamento.valorTotal}${textoObs}
 
 *(Info interna - Km informado: ${dadosOrcamento.distanciaOriginal}km)*`;
 
