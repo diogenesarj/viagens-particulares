@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>D.A Viagens Particulares - Pré-Orçamento</title>
+    <!-- Script oficial do Google Maps com a sua chave integrada -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCm8qa9TzcCcu42tsIDHeXyc-ud3qD6N10&libraries=places"></script>
     <style>
         :root {
             --primary-gold: #d4af37;
@@ -80,19 +82,14 @@
             padding: 10px;
             border-radius: 6px;
             font-size: 12px;
-            color: var(--text-gray);
+            color: #4cd137;
             margin-bottom: 15px;
             border: 1px dashed #444;
             text-align: center;
         }
-        .map-helper a {
-            color: var(--primary-gold);
-            font-weight: bold;
-            text-decoration: underline;
-        }
         .aviso-carencia {
             font-size: 11px;
-            color: #d4af37;
+            color: var(--primary-gold);
             margin-top: 5px;
             font-style: italic;
             display: none;
@@ -138,6 +135,18 @@
             font-style: italic;
             margin-top: 5px;
         }
+        .termos-footer {
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 1px solid #333;
+            font-size: 11px;
+            color: var(--text-gray);
+            line-height: 1.4;
+            text-align: justify;
+        }
+        .termos-footer strong {
+            color: var(--primary-gold);
+        }
     </style>
 </head>
 <body>
@@ -153,27 +162,26 @@
 
     <div class="form-group">
         <label>Origem (Endereço Completo de Saída):</label>
-        <input type="text" id="origem" placeholder="Ex: Rua Exemplo, 123, Bairro, Limeira - SP">
+        <input type="text" id="origem" placeholder="Ex: Rua Exemplo, 123, Bairro, Limeira - SP" onblur="calcularDistanciaAuto()">
     </div>
 
     <div class="form-group">
         <label>Destino (Endereço Completo de Chegada):</label>
-        <input type="text" id="destino" placeholder="Ex: Av. Principal, 456, Bairro, Aeroporto - SP">
+        <input type="text" id="destino" placeholder="Ex: Av. Principal, 456, Bairro, Aeroporto - SP" onblur="calcularDistanciaAuto()">
     </div>
 
     <div class="form-group">
         <label>Parada Extra no Caminho (Opcional):</label>
-        <input type="text" id="paradaExtra" placeholder="Ex: Passar em Jundiaí por 10 min (Deixe em branco se não houver)">
+        <input type="text" id="paradaExtra" placeholder="Ex: Passar em Jundiaí por 10 min (Deixe em branco)">
     </div>
 
-    <div class="map-helper">
-        📍 <strong>Dica:</strong> Não sabe a distância exata? 
-        <a href="https://maps.google.com" target="_blank">Clique aqui para olhar no Google Maps</a>, veja os quilômetros e informe abaixo.
+    <div class="map-helper" id="statusMapa">
+        🛰️ <i>Preencha origem e destino para o cálculo automático de distância via Google Maps.</i>
     </div>
 
     <div class="form-group">
         <label>Distância em Quilômetros (Km):</label>
-        <input type="number" id="distanciaKm" placeholder="Ex: 180">
+        <input type="number" id="distanciaKm" placeholder="Calculado automaticamente ou informe">
     </div>
 
     <div class="form-group">
@@ -219,16 +227,56 @@
         <div class="aviso-pedagio" id="textoAvisoFinal">* Valor estimado. Pedágios serão somados no fechamento final.</div>
         <button onclick="enviarWhatsApp()" style="background: #25d366; color: #fff; margin-top: 15px;">Falar no WhatsApp e Agendar</button>
     </div>
+
+    <!-- Termos e Condições / Política -->
+    <div class="termos-footer">
+        <strong>Termos e Condições:</strong> Política de cancelamento gratuita até 24h antes da viagem. Tolerância de espera padrão de 15 minutos (exceto na modalidade Ida e Volta contratada). Valores sujeitos à alteração em caso de rotas diferentes das informadas.
+    </div>
 </div>
 
 <script>
-    // Define a data mínima como o dia de hoje automaticamente
-    window.onload = function() {
+    // Configura automaticamente a data mínima para hoje
+    document.addEventListener("DOMContentLoaded", function() {
         const hoje = new Date().toISOString().split('T')[0];
-        document.getElementById('dataViagem').min = hoje;
-    };
+        document.getElementById('dataViagem').setAttribute('min', hoje);
+    });
 
     let dadosOrcamento = {};
+
+    // Função que calcula a distância usando a API do Google Maps automaticamente
+    function calcularDistanciaAuto() {
+        const origem = document.getElementById('origem').value;
+        const destino = document.getElementById('destino').value;
+        const statusMapa = document.getElementById('statusMapa');
+
+        if (origem.length > 5 && destino.length > 5) {
+            statusMapa.innerHTML = "🔄 Calculando rota com o Google Maps...";
+            
+            const service = new google.maps.DistanceMatrixService();
+            service.getDistanceMatrix({
+                origins: [origem],
+                destinations: [destino],
+                travelMode: 'DRIVING',
+                unitSystem: google.maps.UnitSystem.METRIC
+            }, (response, status) => {
+                if (status == 'OK') {
+                    const resultadoOriginal = response.rows[0].elements[0];
+                    if (resultadoOriginal.status == 'OK') {
+                        // Distância em metros convertida para quilômetros
+                        const distanciaEmMetros = resultadoOriginal.distance.value;
+                        const distanciaKm = Math.round(distanciaEmMetros / 1000);
+                        
+                        document.getElementById('distanciaKm').value = distanciaKm;
+                        statusMapa.innerHTML = `✅ Distância calculada com sucesso pelo Google Maps: <strong>${distanciaKm} km</strong>`;
+                    } else {
+                        statusMapa.innerHTML = "⚠️ Não foi possível calcular automaticamente. Por favor, informe os km.";
+                    }
+                } else {
+                    statusMapa.innerHTML = "⚠️ Erro na consulta do mapa. Informe os km manualmente se necessário.";
+                }
+            });
+        }
+    }
 
     function verificarCarencia() {
         const tipo = document.getElementById('tipoViagem').value;
@@ -282,7 +330,7 @@
             ${paradaExtra ? `<strong>Parada Extra:</strong> ${paradaExtra}<br>` : ''}
             <strong>Passageiros:</strong> ${qtdPassageiros} pessoa(s)<br>
             <strong>Data/Hora:</strong> ${data.split('-').reverse().join('/')} às ${horario}<br>
-            <strong>Modalidade:</strong> ${tipoViagemSelect === 'ida' ? 'Somente Ida' : 'Ida e Volta'} (${distanciaKmOriginal} km informados)
+            <strong>Modalidade:</strong> ${tipoViagemSelect === 'ida' ? 'Somente Ida' : 'Ida e Volta'} (${distanciaKmOriginal} km estimados)
             ${observacoes ? `<br><strong>Obs:</strong> ${observacoes}` : ''}
         `;
 
@@ -312,10 +360,10 @@ Gostaria de confirmar um agendamento de viagem:
 🏁 *Destino:* ${dadosOrcamento.destino}${textoParada}
 👥 *Passageiros:* ${dadosOrcamento.qtdPassageiros} pessoa(s)
 🚗 *Tipo:* ${dadosOrcamento.tipoViagem}${mensagemCarencia}
-📅 *Data:* ${dadosOrcamento.data.split('-').reverse().join('/')} às ${horario = dadosOrcamento.horario}
+📅 *Data:* ${dadosOrcamento.data.split('-').reverse().join('/')} às ${dadosOrcamento.horario}
 💰 *Valor Estimado:* R$ ${dadosOrcamento.valorTotal} *(Sujeito a acréscimo de pedágios)*${textoObs}
 
-*(Info interna - Km base informado: ${dadosOrcamento.distanciaOriginal}km)*`;
+*(Info interna - Km base do Maps: ${dadosOrcamento.distanciaOriginal}km)*`;
 
         const url = `https://api.whatsapp.com/send?phone=${fone}&text=${encodeURIComponent(mensagem)}`;
         window.open(url, '_blank');
