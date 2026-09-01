@@ -119,18 +119,6 @@
         button:hover {
             opacity: 0.9;
         }
-        .btn-limpar {
-            background: #333;
-            color: #aaa;
-            border: 1px solid #555;
-            margin-top: 8px;
-            font-size: 14px;
-            padding: 10px;
-        }
-        .btn-limpar:hover {
-            background: #444;
-            color: #fff;
-        }
         #resultado {
             margin-top: 20px;
             padding: 15px;
@@ -176,97 +164,78 @@
     <h2>D.A Viagens Particulares</h2>
     <div class="subtitle">Conforto, segurança e pontualidade</div>
 
-    <form id="formOrcamento" onsubmit="event.preventDefault();">
-        <div class="form-group">
-            <label>Seu Nome:</label>
-            <input type="text" id="nome" placeholder="Digite seu nome completo" required>
-        </div>
+    <div class="form-group">
+        <label>Seu Nome:</label>
+        <input type="text" id="nome" placeholder="Digite seu nome completo">
+    </div>
 
-        <div class="form-group">
-            <label>WhatsApp / Telefone para Contato:</label>
-            <input type="tel" id="telefone" placeholder="Ex: (19) 99999-9999" onkeyup="aplicarMascaraTelefone(this)" required>
-        </div>
+    <div class="form-group">
+        <label>Origem (Endereço Completo de Saída):</label>
+        <input type="text" id="origem" placeholder="Ex: Rua Exemplo, 123, Limeira - SP">
+    </div>
 
-        <div class="form-group">
-            <label>Origem (Endereço Completo de Saída):</label>
-            <input type="text" id="origem" placeholder="Ex: Rua Exemplo, 123, Limeira - SP" required>
-        </div>
+    <div class="form-group">
+        <label>Destino (Endereço Completo de Chegada):</label>
+        <input type="text" id="destino" placeholder="Ex: Av. Principal, 456, Aeroporto - SP">
+    </div>
 
-        <div class="form-group">
-            <label>Destino (Endereço Completo de Chegada):</label>
-            <input type="text" id="destino" placeholder="Ex: Av. Principal, 456, Aeroporto - SP" required>
-        </div>
+    <div class="form-group">
+        <label>Parada Extra no Caminho (Opcional):</label>
+        <input type="text" id="paradaExtra" placeholder="Ex: Passar em Jundiaí por 10 min">
+        <div class="aviso-parada">💡 Se a parada for fora da rota ou entrar em outra cidade, some esse desvio nos quilômetros abaixo.</div>
+    </div>
 
-        <div class="form-group">
-            <label>Sentido / Rota Principal:</label>
-            <select id="rotaSentido">
-                <option value="regional">Regional / Interior Próximo (Piracicaba, Rio Claro, Araras, etc.)</option>
-                <option value="campinas">Região de Campinas / Jundiaí</option>
-                <option value="capital" selected>São Paulo (Capital) / Aeroportos / Litoral</option>
-                <option value="longa">Interior Distante / Outras Rodovias (Até 1200km)</option>
-                <option value="semPedagio">Outras rotas sem pedágio / Local</option>
-            </select>
-        </div>
+    <div class="map-helper">
+        📍 <strong>Dica de Rota:</strong> Consulte os quilômetros no 
+        <a href="https://maps.google.com" target="_blank">Google Maps</a> e informe abaixo.
+    </div>
 
-        <div class="form-group">
-            <label>Parada Extra no Caminho (Opcional):</label>
-            <input type="text" id="paradaExtra" placeholder="Ex: Passar em Jundiaí por 10 min">
-            <div class="aviso-parada">💡 Se a parada for fora da rota, informe os km totais considerando esse desvio.</div>
-        </div>
+    <div class="form-group">
+        <label>Distância em Quilômetros (Km):</label>
+        <input type="number" id="distanciaKm" placeholder="Ex: 35">
+    </div>
 
-        <div class="map-helper">
-            📍 <strong>Dica de Rota:</strong> Consulte os quilômetros no 
-            <a href="https://maps.google.com" target="_blank">Google Maps</a> e informe abaixo.
-        </div>
+    <div class="form-group">
+        <label>Quantidade de Passageiros:</label>
+        <select id="qtdPassageiros">
+            <option value="1">1 Passageiro</option>
+            <option value="2">2 Passageiros</option>
+            <option value="3">3 Passageiros</option>
+            <option value="4" selected>4 Passageiros (Máximo)</option>
+        </select>
+    </div>
 
-        <div class="form-group">
-            <label>Distância em Quilômetros (Km):</label>
-            <input type="number" id="distanciaKm" placeholder="Ex: 35" required>
-        </div>
+    <div class="form-group">
+        <label>Tipo de Viagem:</label>
+        <select id="tipoViagem" onchange="verificarCarencia()">
+            <option value="ida">Somente Ida</option>
+            <option value="idaVolta">Ida e Volta</option>
+        </select>
+        <div id="textoCarencia" class="aviso-carencia">⚠️ *Ida e Volta: Inclui até 1 hora de carência/espera no destino. Acima disso há reajuste.*</div>
+    </div>
 
-        <div class="form-group">
-            <label>Quantidade de Passageiros:</label>
-            <select id="qtdPassageiros">
-                <option value="1">1 Passageiro</option>
-                <option value="2">2 Passageiros</option>
-                <option value="3">3 Passageiros</option>
-                <option value="4" selected>4 Passageiros (Máximo)</option>
-            </select>
-        </div>
+    <div class="form-group">
+        <label>Data Desejada:</label>
+        <input type="date" id="dataViagem">
+    </div>
 
-        <div class="form-group">
-            <label>Tipo de Viagem:</label>
-            <select id="tipoViagem" onchange="verificarCarencia()">
-                <option value="ida">Somente Ida</option>
-                <option value="idaVolta">Ida e Volta</option>
-            </select>
-            <div id="textoCarencia" class="aviso-carencia">⚠️ *Ida e Volta: Inclui até 1 hora de carência/espera no destino. Acima disso há reajuste.*</div>
-        </div>
+    <div class="form-group">
+        <label>Horário Desejado:</label>
+        <input type="time" id="horarioViagem">
+    </div>
 
-        <div class="form-group">
-            <label>Data Desejada:</label>
-            <input type="date" id="dataViagem" required>
-        </div>
+    <div class="form-group">
+        <label>Observações Adicionais (Opcional):</label>
+        <textarea id="observacoes" placeholder="Ex: Malas grandes, portão azul, etc."></textarea>
+    </div>
 
-        <div class="form-group">
-            <label>Horário Desejado:</label>
-            <input type="time" id="horarioViagem" required>
-        </div>
-
-        <div class="form-group">
-            <label>Observações Adicionais (Opcional):</label>
-            <textarea id="observacoes" placeholder="Ex: Malas grandes, portão azul, etc."></textarea>
-        </div>
-
-        <button onclick="calcularOrcamento()">Calcular Orçamento</button>
-        <button type="button" class="btn-limpar" onclick="limparFormulario()">Limpar Formulário / Novo Orçamento</button>
-    </form>
+    <button onclick="calcularOrcamento()">Calcular Orçamento</button>
 
     <div id="resultado">
         <h3>Resumo do Pré-Orçamento</h3>
         <p id="detalhesRota"></p>
         <div class="valor-destaque" id="valorFinal"></div>
-        <div class="aviso-pedagio" id="textoAvisoFinal">* Valor estimado para fechamento da viagem.</div>
+        <div class="aviso-pedagio" id="textoAvisoFinal">* Valor estimado. Pedágios serão somados no fechamento final.</div>
         <button onclick="enviarWhatsApp()" style="background: #25d366; color: #fff; margin-top: 15px;">Falar no WhatsApp e Agendar</button>
     </div>
 
@@ -285,20 +254,6 @@
 
     let dadosOrcamento = {};
 
-    // Máscara automática para telefone / WhatsApp (formato brasileiro)
-    function aplicarMascaraTelefone(input) {
-        let v = input.value.replace(/\D/g, "");
-        if (v.length > 11) v = v.slice(0, 11);
-        if (v.length > 6) {
-            v = `(${v.slice(0, 2)}) ${v.slice(2, 7)}-${v.slice(7)}`;
-        } else if (v.length > 2) {
-            v = `(${v.slice(0, 2)}) ${v.slice(2)}`;
-        } else if (v.length > 0) {
-            v = `(${v}`;
-        }
-        input.value = v;
-    }
-
     function verificarCarencia() {
         const tipo = document.getElementById('tipoViagem').value;
         const aviso = document.getElementById('textoCarencia');
@@ -310,11 +265,9 @@
     }
 
     function calcularOrcamento() {
-        const nome = document.getElementById('nome').value.trim();
-        const telefone = document.getElementById('telefone').value.trim();
-        const origem = document.getElementById('origem').value.trim();
-        const destino = document.getElementById('destino').value.trim();
-        const rotaSentido = document.getElementById('rotaSentido').value;
+        const nome = document.getElementById('nome').value;
+        const origem = document.getElementById('origem').value;
+        const destino = document.getElementById('destino').value;
         const paradaExtra = document.getElementById('paradaExtra').value.trim();
         const distanciaInput = parseFloat(document.getElementById('distanciaKm').value);
         const qtdPassageiros = document.getElementById('qtdPassageiros').value;
@@ -323,64 +276,31 @@
         const horario = document.getElementById('horarioViagem').value;
         const observacoes = document.getElementById('observacoes').value.trim();
 
-        if (!nome || !telefone || !origem || !destino || isNaN(distanciaInput) || !data || !horario) {
+        if (!nome || !origem || !destino || isNaN(distanciaInput) || !data || !horario) {
             alert('Por favor, preencha todos os campos obrigatórios corretamente!');
             return;
         }
 
         const distanciaKmOriginal = distanciaInput;
 
-        // Dobra o km nos bastidores (ida e volta do cálculo de combustível/desgaste)
+        // Dobra o km nos bastidores (ida e volta do cálculo)
         let kmCalculo = distanciaKmOriginal * 2;
 
-        // Valor base por km: R$ 1,25 (ida) / R$ 1,35 (ida e volta)
+        // Valores aplicados internamente: R$ 1,25 (ida) / R$ 1,35 (ida e volta)
         let precoKm = (tipoViagemSelect === 'ida') ? 1.25 : 1.35;
-        let custoKmTotal = kmCalculo * precoKm;
-
-        // Valores reais de pedágio embutidos (Ida + Volta consolidadas)
-        let valorPedagioEmbutido = 0;
-        let nomeRotaTexto = "";
-
-        switch(rotaSentido) {
-            case 'regional':
-                valorPedagioEmbutido = 21.20; // Base real praças região próxima (ex: Araras/Leme ida e volta)
-                nomeRotaTexto = "Regional / Interior Próximo";
-                break;
-            case 'campinas':
-                valorPedagioEmbutido = 45.00; // Base real Limeira + Nova Odessa/Sumaré ida e volta
-                nomeRotaTexto = "Campinas / Jundiaí";
-                break;
-            case 'capital':
-                valorPedagioEmbutido = 98.00; // Base real corredor Anhanguera/Bandeirantes completo ida e volta
-                nomeRotaTexto = "São Paulo / Aeroportos / Litoral";
-                break;
-            case 'longa':
-                valorPedagioEmbutido = kmCalculo * 0.25; // Proporcional para longas distâncias
-                nomeRotaTexto = "Interior Distante / Outras Rodovias";
-                break;
-            case 'semPedagio':
-            default:
-                valorPedagioEmbutido = 0;
-                nomeRotaTexto = "Sem Pedágios / Local";
-                break;
-        }
-
-        // Soma o custo base + pedágios reais embutidos de forma invisível
-        let valorTotal = custoKmTotal + valorPedagioEmbutido;
+        let valorTotal = kmCalculo * precoKm;
 
         const tipoTexto = (tipoViagemSelect === 'ida') ? 'Somente Ida' : 'Ida e Volta (Com até 1h de carência)';
 
         dadosOrcamento = {
-            nome, telefone, origem, destino, rotaTexto: nomeRotaTexto, paradaExtra, 
-            tipoViagem: tipoTexto, tipoSimples: tipoViagemSelect,
-            qtdPassageiros, data, horario, observacoes, 
-            distanciaOriginal: distanciaKmOriginal,
+            nome, origem, destino, paradaExtra, tipoViagem: tipoTexto,
+            tipoSimples: tipoViagemSelect,
+            qtdPassageiros,
+            data, horario, observacoes, distanciaOriginal: distanciaKmOriginal,
             valorTotal: valorTotal.toFixed(2)
         };
 
         let htmlDetalhes = `
-            <strong>Nome:</strong> ${nome}<br>
-            <strong>Contato:</strong> ${telefone}<br>
             <strong>De:</strong> ${origem}<br>
             <strong>Para:</strong> ${destino}<br>
             ${paradaExtra ? `<strong>Parada Extra:</strong> ${paradaExtra}<br>` : ''}
@@ -397,16 +317,6 @@
         document.getElementById('detalhesRota').innerHTML = htmlDetalhes;
         document.getElementById('valorFinal').innerHTML = `R$ ${valorTotal.toFixed(2)}`;
         document.getElementById('resultado').style.display = 'block';
-        
-        // Rola suavemente até o resultado
-        document.getElementById('resultado').scrollIntoView({ behavior: 'smooth' });
-    }
-
-    function limparFormulario() {
-        document.getElementById('formOrcamento').reset();
-        document.getElementById('resultado').style.display = 'none';
-        document.getElementById('textoCarencia').style.display = 'none';
-        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function enviarWhatsApp() {
@@ -420,17 +330,14 @@
         let textoObs = dadosOrcamento.observacoes ? `\n📝 *Observações:* ${dadosOrcamento.observacoes}` : '';
 
         const mensagem = `Olá! Meu nome é *${dadosOrcamento.nome}*.
-Meu contato: *${dadosOrcamento.telefone}*
-
 Gostaria de confirmar um agendamento de viagem:
 
 📍 *Origem:* ${dadosOrcamento.origem}
 🏁 *Destino:* ${dadosOrcamento.destino}${textoParada}
-🛣️ *Rota:* ${dadosOrcamento.rotaTexto}
 👥 *Passageiros:* ${dadosOrcamento.qtdPassageiros} pessoa(s)
 🚗 *Tipo:* ${dadosOrcamento.tipoViagem}${mensagemCarencia}
 📅 *Data:* ${dadosOrcamento.data.split('-').reverse().join('/')} às ${dadosOrcamento.horario}
-💰 *Valor Final:* R$ ${dadosOrcamento.valorTotal}${textoObs}
+💰 *Valor Estimado:* R$ ${dadosOrcamento.valorTotal} *(Sujeito a acréscimo de pedágios)*${textoObs}
 
 *(Info interna - Km informado: ${dadosOrcamento.distanciaOriginal}km)*`;
 
