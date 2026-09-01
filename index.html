@@ -56,7 +56,7 @@
             font-weight: 600;
             font-size: 14px;
         }
-        input, select {
+        input, select, textarea {
             width: 100%;
             padding: 12px;
             background: #2a2a2a;
@@ -65,10 +65,15 @@
             border-radius: 6px;
             box-sizing: border-box;
             font-size: 14px;
+            font-family: inherit;
         }
-        input:focus, select:focus {
+        input:focus, select:focus, textarea:focus {
             border-color: var(--primary-gold);
             outline: none;
+        }
+        textarea {
+            resize: vertical;
+            height: 80px;
         }
         .map-helper {
             background: #262626;
@@ -147,13 +152,18 @@
     </div>
 
     <div class="form-group">
-        <label>Origem (Endereço/Cidade de saída):</label>
-        <input type="text" id="origem" placeholder="Ex: Limeira, SP">
+        <label>Origem (Endereço Completo de Saída):</label>
+        <input type="text" id="origem" placeholder="Ex: Rua Exemplo, 123, Bairro, Limeira - SP">
     </div>
 
     <div class="form-group">
-        <label>Destino (Endereço/Cidade de chegada):</label>
-        <input type="text" id="destino" placeholder="Ex: Aeroporto de Guarulhos, SP">
+        <label>Destino (Endereço Completo de Chegada):</label>
+        <input type="text" id="destino" placeholder="Ex: Av. Principal, 456, Bairro, Aeroporto - SP">
+    </div>
+
+    <div class="form-group">
+        <label>Parada Extra no Caminho (Opcional):</label>
+        <input type="text" id="paradaExtra" placeholder="Ex: Passar em Jundiaí por 10 min (Deixe em branco se não houver)">
     </div>
 
     <div class="map-helper">
@@ -195,7 +205,12 @@
         <input type="time" id="horarioViagem">
     </div>
 
-    <button onclick="calcularOrcamento()">Calcalcular Orçamento</button>
+    <div class="form-group">
+        <label>Observações Adicionais (Opcional):</label>
+        <textarea id="observacoes" placeholder="Ex: Malas grandes, portão azul, etc."></textarea>
+    </div>
+
+    <button onclick="calcularOrcamento()">Calcular Orçamento</button>
 
     <div id="resultado">
         <h3>Resumo do Pré-Orçamento</h3>
@@ -207,6 +222,12 @@
 </div>
 
 <script>
+    // Define a data mínima como o dia de hoje automaticamente
+    window.onload = function() {
+        const hoje = new Date().toISOString().split('T')[0];
+        document.getElementById('dataViagem').min = hoje;
+    };
+
     let dadosOrcamento = {};
 
     function verificarCarencia() {
@@ -223,14 +244,16 @@
         const nome = document.getElementById('nome').value;
         const origem = document.getElementById('origem').value;
         const destino = document.getElementById('destino').value;
+        const paradaExtra = document.getElementById('paradaExtra').value.trim();
         const distanciaInput = parseFloat(document.getElementById('distanciaKm').value);
         const qtdPassageiros = document.getElementById('qtdPassageiros').value;
         const tipoViagemSelect = document.getElementById('tipoViagem').value;
         const data = document.getElementById('dataViagem').value;
         const horario = document.getElementById('horarioViagem').value;
+        const observacoes = document.getElementById('observacoes').value.trim();
 
         if (!nome || !origem || !destino || isNaN(distanciaInput) || !data || !horario) {
-            alert('Por favor, preencha todos os campos corretamente!');
+            alert('Por favor, preencha todos os campos obrigatórios corretamente!');
             return;
         }
 
@@ -246,19 +269,21 @@
         const tipoTexto = (tipoViagemSelect === 'ida') ? 'Somente Ida' : 'Ida e Volta (Com até 1h de carência)';
 
         dadosOrcamento = {
-            nome, origem, destino, tipoViagem: tipoTexto,
+            nome, origem, destino, paradaExtra, tipoViagem: tipoTexto,
             tipoSimples: tipoViagemSelect,
             qtdPassageiros,
-            data, horario, distanciaOriginal: distanciaKmOriginal,
+            data, horario, observacoes, distanciaOriginal: distanciaKmOriginal,
             valorTotal: valorTotal.toFixed(2)
         };
 
         let htmlDetalhes = `
             <strong>De:</strong> ${origem}<br>
             <strong>Para:</strong> ${destino}<br>
+            ${paradaExtra ? `<strong>Parada Extra:</strong> ${paradaExtra}<br>` : ''}
             <strong>Passageiros:</strong> ${qtdPassageiros} pessoa(s)<br>
             <strong>Data/Hora:</strong> ${data.split('-').reverse().join('/')} às ${horario}<br>
             <strong>Modalidade:</strong> ${tipoViagemSelect === 'ida' ? 'Somente Ida' : 'Ida e Volta'} (${distanciaKmOriginal} km informados)
+            ${observacoes ? `<br><strong>Obs:</strong> ${observacoes}` : ''}
         `;
 
         if (tipoViagemSelect === 'idaVolta') {
@@ -277,15 +302,18 @@
             mensagemCarencia = "\n🕒 *Condição:* Ida e Volta (Até 1h de carência inclusa)";
         }
 
+        let textoParada = dadosOrcamento.paradaExtra ? `\n📍 *Parada Extra:* ${dadosOrcamento.paradaExtra}` : '';
+        let textoObs = dadosOrcamento.observacoes ? `\n📝 *Observações:* ${dadosOrcamento.observacoes}` : '';
+
         const mensagem = `Olá! Meu nome é *${dadosOrcamento.nome}*.
 Gostaria de confirmar um agendamento de viagem:
 
 📍 *Origem:* ${dadosOrcamento.origem}
-🏁 *Destino:* ${dadosOrcamento.destino}
+🏁 *Destino:* ${dadosOrcamento.destino}${textoParada}
 👥 *Passageiros:* ${dadosOrcamento.qtdPassageiros} pessoa(s)
 🚗 *Tipo:* ${dadosOrcamento.tipoViagem}${mensagemCarencia}
-📅 *Data:* ${dadosOrcamento.data.split('-').reverse().join('/')} às ${dadosOrcamento.horario}
-💰 *Valor Estimado:* R$ ${dadosOrcamento.valorTotal} *(Sujeito a acréscimo de pedágios)*
+📅 *Data:* ${dadosOrcamento.data.split('-').reverse().join('/')} às ${horario = dadosOrcamento.horario}
+💰 *Valor Estimado:* R$ ${dadosOrcamento.valorTotal} *(Sujeito a acréscimo de pedágios)*${textoObs}
 
 *(Info interna - Km base informado: ${dadosOrcamento.distanciaOriginal}km)*`;
 
